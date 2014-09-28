@@ -1,0 +1,77 @@
+---
+- name: Set solr_filename for Solr 4.x.
+  set_fact: >
+    solr_filename=solr-{{ solr_version }}
+  when: "solr_version.split('.')[0] == '4'"
+
+- name: Set solr_filename for Solr 3.x.
+  set_fact: >
+    solr_filename=apache-solr-{{ solr_version }}
+  when: "solr_version.split('.')[0] == '3'"
+
+- name: Install java
+  apt: pkg={{ solr_java_package }}
+  sudo: yes
+
+- name: Download Solr
+  get_url: 
+    url=http://archive.apache.org/dist/lucene/solr/{{ solr_version }}/{{ solr_filename }}.tgz
+    dest={{ workspace }}/{{ solr_filename }}.tgz
+    force=no
+
+- name: Extract Solr
+  command: 
+    tar -C {{ workspace }} -xvzf {{ workspace }}/{{ solr_filename }}.tgz
+    creates={{ workspace }}/{{ solr_filename }}
+
+- name: Copy Solr into place
+  command: 
+    cp -r {{ workspace }}/{{ solr_filename }}/example {{ solr_path }}
+    creates={{ solr_path }}
+
+- name: Create logging.properties
+  copy:
+    src=logging.properties
+    dest={{ solr_path}}/logging.properties
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create home directory
+  file:
+    path={{ solr_home_path }}
+    owner=root
+    group=root
+    mode=0755
+    state=directory
+
+- name: Create solr.xml
+  copy:
+    src=solr.xml
+    dest={{ solr_home_path}}/solr.xml
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create log directory
+  file:
+    path=/var/log/solr
+    owner=root
+    group=root
+    mode=0755
+    state=directory
+
+- name: Create initscript
+  template:
+    src=initscript.j2
+    dest=/etc/init.d/solr
+    owner=root
+    group=root
+    mode=0755
+
+- name: Update rc.d
+  command:
+    update-rc.d solr defaults
+    creates=/etc/rc2.d/S20solr
+
+

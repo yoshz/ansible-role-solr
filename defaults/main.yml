@@ -1,0 +1,7 @@
+---
+workspace: /root
+solr_version: "4.9.0"
+solr_path: /opt/solr
+solr_java_package: openjdk-7-jre-headless
+solr_home_path: /var/data/solr
+solr_home_group: root

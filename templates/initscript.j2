@@ -1,0 +1,114 @@
+#! /bin/sh -e
+### BEGIN INIT INFO
+# Provides:          solr
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start Solr daemon
+# Description: Start the Solr Enterprise Search server in Jetty.
+### END INIT INFO
+set -e
+
+# Defaults
+RUN_MODE="daemons"
+
+JAVA=/usr/bin/java
+NAME=solr
+DAEMONDIR={{ solr_path }}
+DAEMON=start.jar
+PIDDIR=/var/run
+DEFAULT=/etc/default/$NAME
+SOLRPID=$PIDDIR/$NAME.pid
+LOGFILE=/var/log/solr/solr.log
+
+if [ `id -u` -ne 0 ]; then
+ echo "You need root privileges to run this script"
+ exit 1
+fi
+
+. /lib/lsb/init-functions
+. /etc/default/rcS
+
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+# The following variables can be overwritten in $DEFAULT
+
+if [ -z "$JAVA_OPTS" ]; then
+ JAVA_OPTS="-Djava.awt.headless=true -Dsolr.solr.home={{ solr_home_path }}"
+fi
+
+# End of variables that can be overwritten in $DEFAULT
+
+# overwrite settings from default file
+if [ -f "$DEFAULT" ]; then
+ . "$DEFAULT"
+fi
+
+if [ ! -d "$DAEMONDIR" ]; then
+ log_failure_msg "$NAME is not installed"
+ exit 1
+fi
+
+if [ ! -f "$DAEMONDIR/$DAEMON" ]; then
+ log_failure_msg "missing $DAEMON"
+ exit 1
+fi
+
+if [ ! -x "$JAVA" ]; then
+ log_failure_msg "missing $JAVA"
+ exit 1
+fi
+
+if [ -r "$DAEMONDIR"/logging.properties ]; then
+ JAVA_OPTS="$JAVA_OPTS "-Djava.util.logging.config.file="$DAEMONDIR/logging.properties"
+fi
+
+#export $JAVA_OPTS
+
+case "$1" in
+        start)
+                log_daemon_msg "Starting Solr daemon"
+                log_progress_msg "solr"
+                # Make sure we have our PIDDIR, even if it's on a tmpfs
+                #install -o root -g root -m 755 -d $PIDDIR
+                start-stop-daemon --start --chdir $DAEMONDIR --pidfile $SOLRPID --make-pidfile --background --exec $JAVA \
+                    -- $JAVA_OPTS -jar $DAEMON 2> $LOGFILE
+                log_end_msg 0
+                ;;
+        stop)
+                log_daemon_msg "Stopping Solr daemon"
+                start-stop-daemon --stop --quiet --pidfile $SOLRPID
+                log_progress_msg "solr"
+                # Wait a little and remove stale PID file
+                sleep 1
+                if [ -f $SOLRPID ] && ! ps h `cat $SOLRPID` > /dev/null
+                then
+                        # Stale PID file (solr was succesfully stopped),
+                        # remove it
+                        rm -f $SOLRPID
+                fi
+                log_end_msg 0
+                ;;
+        restart|force-reload)
+                $0 stop
+                sleep 4
+                $0 start
+                ;;
+        status)
+                pidofproc -p $SOLRPID $JAVA >/dev/null
+                status=$?
+                if [ $status -eq 0 ]; then
+                        log_success_msg "SOLR is running"
+                else
+                        log_failure_msg "SOLR is not running"
+                fi
+                exit $status
+                ;;
+        *)
+                echo "Usage: /etc/init.d/solr {start|stop|restart|force-reload|status}"
+                exit 1
+esac
+
+exit 0
+
