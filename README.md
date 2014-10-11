@@ -2,6 +2,7 @@ solr
 ====
 
 An Ansible Role configuring Apache Solr on Debian/Ubuntu.
+[![Build Status](https://travis-ci.org/yoshz/ansible-role-solr.svg)](https://travis-ci.org/yoshz/ansible-role-solr)
 
 
 Requirements
