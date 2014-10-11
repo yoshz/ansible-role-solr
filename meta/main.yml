@@ -1,14 +1,16 @@
 ---
 galaxy_info:
-  author: yoshz
+  author: "Yosh de Vos"
   description: Installs/configures Apache Solr for Debian/Ubuntu.
+  version: 0.1
   min_ansible_version: 1.4
   platforms:
   - name: Debian
     versions:
-    - all
+      - all
   - name: Ubuntu
     versions:
-    - all
+      - all
   categories:
-    - development
+    - web
+    - database

@@ -1,12 +1,17 @@
-# Ansible Role: Apache Solr
+solr
+====
 
-An Ansible Role that installs Apache Solr on Debian/Ubuntu Linux servers.
+An Ansible Role configuring Apache Solr on Debian/Ubuntu.
 
-## Requirements
+
+Requirements
+------------
 
 None.
 
-## Role Variables
+
+Role Variables
+--------------
 
 Available variables are listed below, along with default values (see `vars/main.yml`):
 
@@ -28,17 +33,22 @@ Available variables are listed below, along with default values (see `vars/main.
     # The name of the group that owns the home path
     solr_home_group: root
 
-## Dependencies
+
+Dependencies
+------------
 
 None.
 
-## Example Playbook
+
+Example Playbook
+----------------
 
     - hosts: solrserver
       roles:
         - { role: solr }
 
-## License
 
-MIT / BSD
+License
+-------
 
+MIT
