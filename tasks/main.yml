@@ -31,7 +31,7 @@
     creates={{ solr_path }}
 
 - name: Create logging.properties
-  copy:
+  copy: >
     src=logging.properties
     dest={{ solr_path}}/logging.properties
     owner=root
@@ -39,15 +39,15 @@
     mode=0644
 
 - name: Create home directory
-  file:
+  file: >
     path={{ solr_home_path }}
-    owner=root
-    group=root
-    mode=0755
+    owner={{ solr_home_owner }}
+    group={{ solr_home_group }}
+    mode={{ solr_home_mode }}
     state=directory
 
 - name: Create solr.xml
-  copy:
+  copy: >
     src=solr.xml
     dest={{ solr_home_path}}/solr.xml
     owner=root
@@ -55,7 +55,7 @@
     mode=0644
 
 - name: Create log directory
-  file:
+  file: >
     path=/var/log/solr
     owner=root
     group=root
@@ -63,7 +63,7 @@
     state=directory
 
 - name: Create initscript
-  template:
+  template: >
     src=initscript.j2
     dest=/etc/init.d/solr
     owner=root
