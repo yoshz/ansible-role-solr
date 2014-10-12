@@ -6,4 +6,4 @@ solr_java_package: openjdk-7-jre-headless
 solr_home_path: /var/data/solr
 solr_home_owner: root
 solr_home_group: root
-solr_home_mode: 0755
+solr_home_mode: 755
