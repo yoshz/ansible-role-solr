@@ -81,7 +81,7 @@ case "$1" in
                 start-stop-daemon --stop --quiet --pidfile $SOLRPID
                 log_progress_msg "solr"
                 # Wait a little and remove stale PID file
-                sleep 1
+                sleep 4
                 if [ -f $SOLRPID ] && ! ps h `cat $SOLRPID` > /dev/null
                 then
                         # Stale PID file (solr was succesfully stopped),
@@ -92,7 +92,7 @@ case "$1" in
                 ;;
         restart|force-reload)
                 $0 stop
-                sleep 4
+                sleep 1
                 $0 start
                 ;;
         status)
