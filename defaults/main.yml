@@ -7,3 +7,4 @@ solr_home_path: /var/data/solr
 solr_home_owner: root
 solr_home_group: root
 solr_home_mode: 755
+solr_java_memory_options: "-Xmx128M -Xms64M -XX:MaxPermSize=64M -Xmn32M"
