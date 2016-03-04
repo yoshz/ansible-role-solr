@@ -35,7 +35,7 @@ export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 # The following variables can be overwritten in $DEFAULT
 
 if [ -z "$JAVA_OPTS" ]; then
- JAVA_OPTS="-Djava.awt.headless=true -Dsolr.solr.home={{ solr_home_path }}"
+ JAVA_OPTS="-Djava.awt.headless=true -Dsolr.solr.home={{ solr_home_path }} {{ solr_java_memory_options }}"
 fi
 
 # End of variables that can be overwritten in $DEFAULT
@@ -81,7 +81,7 @@ case "$1" in
                 start-stop-daemon --stop --quiet --pidfile $SOLRPID
                 log_progress_msg "solr"
                 # Wait a little and remove stale PID file
-                sleep 1
+                sleep 4
                 if [ -f $SOLRPID ] && ! ps h `cat $SOLRPID` > /dev/null
                 then
                         # Stale PID file (solr was succesfully stopped),
@@ -92,7 +92,7 @@ case "$1" in
                 ;;
         restart|force-reload)
                 $0 stop
-                sleep 4
+                sleep 3
                 $0 start
                 ;;
         status)
